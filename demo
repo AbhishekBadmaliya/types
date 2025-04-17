@@ -1,0 +1,13 @@
+@PostMapping("/get-fsp-id")
+    public <json> EncryptedResponse getFSP(
+    HttpServletResponse response) throws Exception {
+    List<Map<String, Object>> result = drillRepo.getFSPName();
+    return new EncryptedResponse(result);
+  }
+
+
+
+@Query(nativeQuery = true, value = """
+            SELECT fsp.fsp_id FROM public.save_created_fsp as fsp
+            """)
+    List<Map<String, Object>> getFSPName();
