@@ -1,3 +1,62 @@
+Thanks for sharing the MatrixLevelDAMasterForm.tsx file. After reviewing it, here’s the root cause and the solution for the id being undefined:
+
+Root Cause
+
+Your onSubmit function uses:
+
+const payload = {
+  ...data,
+  id: payMatrixMasterData?.id,
+};
+
+But you’re conditionally setting default values like this:
+
+defaultValues: {
+  payCommission: isEditMode ? payMatrixMasterData?.pay_commission : "",
+  ...
+}
+
+You are not ensuring that payMatrixMasterData exists when isEditMode is true. So if payMatrixMasterData is null or undefined while isEditMode is true, then .id becomes undefined.
+
+Fix Options
+
+Option 1: Ensure payMatrixMasterData is always defined when editing
+
+In MatrixLevelMaster.tsx, you call:
+
+setSelectedPayMatrixMaster(row.original);
+setShowStatusField(true);
+
+So when this is passed into the form as payMatrixMasterData, you must also pass:
+
+isEditMode={!!row.original}
+
+And ensure row.original actually contains the id field.
+
+	Log this to confirm:
+
+console.log("Row selected:", row.original);
+
+Option 2: Defensive Check Before Submit
+
+In MatrixLevelDAMasterForm.tsx, modify the onSubmit logic:
+
+const payload = payMatrixMasterData?.id
+  ? { ...data, id: payMatrixMasterData.id }
+  : { ...data };
+
+This ensures id is only included if it actually exists.
+
+Optional Debug Step
+
+Add this log before onSubmit to ensure data is being received:
+
+console.log("payMatrixMasterData at submit:", payMatrixMasterData);
+
+Summary Fix
+
+Update the onSubmit logic to:
+
 const onSubmit = async (data: any) => {
   console.log("dataaaaaaaaaaaaa", data);
   console.log("payMatrixMasterData at submit:", payMatrixMasterData);
@@ -33,3 +92,5 @@ const onSubmit = async (data: any) => {
 
   generateUuid();
 };
+
+Let me know if you’d like the corrected full file. ￼
