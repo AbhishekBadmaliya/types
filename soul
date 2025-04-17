@@ -1,0 +1,35 @@
+const onSubmit = async (data: any) => {
+  console.log("dataaaaaaaaaaaaa", data);
+  console.log("payMatrixMasterData at submit:", payMatrixMasterData);
+
+  const payload = payMatrixMasterData?.id
+    ? { ...data, id: payMatrixMasterData.id }
+    : { ...data };
+
+  console.log("payload", payload);
+
+  try {
+    const result = await fetcher(
+      {
+        path: payMatrixMasterData
+          ? "/da-master/update-status"
+          : "/da-master/save-da-component",
+      },
+      {
+        json: payload,
+      }
+    );
+
+    if (typeof result === "string") {
+      toast.success(result);
+      close();
+      refresh();
+    } else if (result?.error) {
+      toast.error(result.error);
+    }
+  } catch (error) {
+    toast.error("An error occurred while saving the data.");
+  }
+
+  generateUuid();
+};
